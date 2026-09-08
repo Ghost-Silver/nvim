@@ -1,7 +1,5 @@
 -- DAP 可视化调试：codelldb 调试器 + 一键编译并调试当前文件
 return {
-  { import = "lazyvim.plugins.extras.dap.core" },
-
   -- 通过 mason 安装 codelldb（C/C++/Rust 的调试适配器）
   {
     "jay-babu/mason-nvim-dap.nvim",
