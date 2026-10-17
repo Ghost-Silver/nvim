@@ -5,6 +5,15 @@ vim.opt_local.shiftwidth = 4
 vim.opt_local.softtabstop = 4
 vim.opt_local.cindent = true
 
+-- 在独立终端里运行二进制，跑完后停留等待回车，避免结果一闪而过
+local function run_terminal(bin)
+  local dir = vim.fn.expand("%:p:h")
+  local keep = vim.fn.shellescape(bin)
+    .. "\necho ''\necho '====== 程序已结束，按回车关闭此终端 ======'\nread _"
+  -- auto_close=false：即使程序/包装 shell 退出，终端 pane 也不会自动关闭
+  Snacks.terminal({ "sh", "-c", keep }, { cwd = dir, auto_close = false })
+end
+
 -- 编译当前文件，失败时输出进 quickfix（:copen 跳错误），成功可选择在终端运行
 local function build(run, extra_flags)
   local file = vim.fn.expand("%:p")
@@ -21,7 +30,7 @@ local function build(run, extra_flags)
       if res.code == 0 then
         vim.notify("编译成功 ✓ " .. vim.fn.fnamemodify(bin, ":t"))
         if run then
-          Snacks.terminal(bin, { cwd = vim.fn.expand("%:p:h") })
+          run_terminal(bin)
         end
       else
         vim.notify("编译失败 ✗ 详见 quickfix", vim.log.levels.ERROR)
