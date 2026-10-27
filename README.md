@@ -1,84 +1,131 @@
 # GhostFace's Nvim 配置
 
-基于 [LazyVim](https://github.com/LazyVim/LazyVim) 的个人配置。主题 **catppuccin-mocha**，全透明（配合 iTerm2 毛玻璃）。
+基于 [LazyVim](https://github.com/LazyVim/LazyVim) 深度定制的个人开发与定理证明环境。
+主题采用 **Catppuccin Mocha**（定制冷冽黑底），全透明毛玻璃质感，完美适配 **Ghostty** (Metal + Display P3) 与 **iTerm2**。
 
-## 前提
+---
 
-- Neovim ≥ 0.10
-- iTerm2 中：Profiles → Window 里**取消勾选「Keep background colors opaque」**，并设好 Transparency + Blur
-- 终端配色建议深色，才能透出好看的纱罩效果
+## 核心特性
 
-## 首次使用
+- 💎 **极客美学**：全局透明背景无边框，结合毛玻璃无缝透光，消除大标题与代码块实色色块。
+- 📐 **Lean 4 定理证明**：开箱即用的 `lean.nvim` 集成、实时交互式 Infoview 证明状态视窗、高对比度目标高亮与 Unicode 数学符号补全（如 `\to` $\to$ `→`, `\forall` $\to$ `∀`, `\lambda` $\to$ `λ`）。
+- 📝 **Markdown & LaTeX 实时预览**：
+  - 终端 Buffer 内行内 Unicode 公式美化（`render-markdown.nvim` + `latex2text`）；
+  - 浏览器端像素级 KaTeX / MathJax 实时双向滚动预览（`markdown-preview.nvim`）。
+- 🤖 **AI 结对助手 (Antigravity CLI)**：内置 `<leader>a` 系列快捷键，支持智能右侧分屏（与 Lean Infoview 自动 50/50 均分）、悬浮窗口与选区代码即时重构。
+- ⚡ **C++ 算法竞赛 & DAP 调试**：极速编译运行、Sanitizer 诊断、代码片段与基于 `codelldb` 的可视化单步调试。
 
-```bash
-nvim    # 首次启动会自动安装所有插件
-```
+---
+
+## 运行环境
+
+- **Neovim** $\ge$ 0.10
+- **推荐终端**：[Ghostty](https://ghostty.org/)（原生 Metal 渲染，P3 广色域）或 iTerm2
+- **依赖工具**：
+  - Lean 4：`elan`（确保在 `~/.elan/bin`）
+  - LaTeX 转文本：`pylatexenc` (`latex2text`)
+  - 调试器：`codelldb` (Mason 自动管理)
+
+---
 
 ## 快捷键速查
 
-> `<leader>` 默认是 `空格键`
+> `<leader>` 默认为 **`空格键 (Space)`**；`<LocalLeader>` 默认为 **`\` (反斜杠)**
 
-### 通用
-
-| 按键 | 说明 |
-|---|---|
-| `<leader>ff` | 查找文件（fd） |
-| `<leader>fg` | 全局文本搜索（rg） |
-| `<leader>fr` | 最近文件 |
-| `<leader>e` | 打开侧边文件树（Snacks Explorer） |
-| `<leader>u` | 撤销会话树 |
-| `<Esc>` | 关闭当前高亮 / 浮窗 |
-
-### C++ 竞赛（在 `.cpp` 文件内）
+### 1. 通用操作与导航
 
 | 按键 | 说明 |
-|---|---|
-| `<leader>cc` | 编译（g++ -std=c++17 -O2 -Wall -Wextra，异步） |
-| `<leader>cr` | 编译并运行（弹出交互式终端，可 `cin`） |
-| `<leader>cC` | Sanitize 调试版编译运行（ASan + UBSan） |
-| `st` + Tab | 插入代码骨架片段（luasnip） |
+| :--- | :--- |
+| `<leader>ff` | 模糊查找文件（Snacks Picker / fd） |
+| `<leader>fg` | 全局文本搜索（ripgrep） |
+| `<leader>fr` | 打开最近文件列表 |
+| `<leader>e` | 打开 / 关闭侧边文件树（Snacks Explorer，按 `a` 新建，`r` 重命名，`d` 删除） |
+| `Shift + h` / `Shift + l` | 快速在顶部标签栏左右切换 Buffer |
+| `<leader>bd` | 关闭当前 Buffer（保持窗口布局） |
+| `<leader>w` | 保存当前文件 |
+| `<Esc>` | 关闭当前高亮 / 搜索提示 / 浮窗 |
 
-编译失败时自动弹出 quickfix 窗口，回车跳转到出错行。
+---
 
-### DAP 可视化调试（codelldb）
+### 2. Lean 4 交互式定理证明（在 `.lean` 文件内）
 
 | 按键 | 说明 |
-|---|---|
-| `<leader>dD` | **编译并调试当前文件**（带 `-g` 符号，停到入口） |
-| `<leader>db` | 切换断点（当前行） |
+| :--- | :--- |
+| `\i` 或 `<leader>li` | 打开 / 关闭 **Lean Infoview**（右侧证明状态与待证目标 Goals） |
+| `\p` | 暂停 / 恢复 Infoview 目标更新 |
+| `\x` | 固定（Pin）当前证明目标状态 |
+| `\c` | 清除固定状态 |
+| `\r` | 重新触发当前位置检查 |
+| `\d` | 跳转到定义（Jump to Definition） |
+| 输入 `\符号名` | 自动补全数学符号（如 `\to` $\to$ `→`, `\and` $\to$ `∧`, `\or` $\to$ `∨`, `\iff` $\to$ `↔`, `\cdot` $\to$ `·`） |
+
+---
+
+### 3. Markdown 与 LaTeX 排版（在 `.md` 文件内）
+
+| 按键 | 说明 |
+| :--- | :--- |
+| `<leader>mp` 或 `<leader>cp` | **打开 / 关闭浏览器 KaTeX 实时同步预览**（基于 MathJax/KaTeX 毫秒级排版） |
+| `:MarkdownPreviewStop` | 手动终止预览后台进程 |
+
+---
+
+### 4. AI 结对编程 (Antigravity CLI)
+
+| 按键 | 模式 | 说明 |
+| :--- | :--- | :--- |
+| `<leader>as` | 普通模式 | **呼出 / 收起 Antigravity 侧边栏终端**（若右侧存在 Lean Infoview，自动 50/50 垂直对分） |
+| `<leader>af` | 普通模式 | 弹出 / 隐藏 Antigravity 居中沉浸式浮窗终端 |
+| `<leader>aa` | 可视模式 | 选中代码块后直接向 Antigravity 提问或请求重构 |
+
+---
+
+### 5. C++ 算法竞赛（在 `.cpp` 文件内）
+
+| 按键 | 说明 |
+| :--- | :--- |
+| `<leader>cc` | 异步编译（`g++ -std=c++17 -O2 -Wall -Wextra`） |
+| `<leader>cr` | 编译并弹出交互式运行终端（支持标准 `cin` / 交互调试） |
+| `<leader>cC` | Sanitizer 调试版编译运行（开启 ASan + UBSan 内存越界检测） |
+| `st` + `Tab` | 插入 C++ 竞赛头部模板（Luasnip） |
+
+---
+
+### 6. DAP 可视化调试（Codelldb）
+
+| 按键 | 说明 |
+| :--- | :--- |
+| `<leader>dD` | **编译并启动当前文件调试**（带 `-g` 符号表，自动停在入口） |
+| `<leader>db` | 切换当前行断点 |
 | `<leader>dB` | 设置条件断点 |
-| `<leader>dc` | 继续 / 启动调试 |
-| `<leader>dl` | 运行上次调试 |
-| `<leader>dg` | 光标跳转（不执行） |
-| `<leader>di` / `<leader>do` / `<leader>dO` | 单步 进入 / 跳出 / 跳过 |
-| `<leader>du` | 开关调试 UI 面板 |
-| `<leader>de` | 求值表达式（可视模式选中变量） |
-| `<leader>dr` | 调试 REPL |
-| `<leader>dt` | 终止调试 |
-| `<leader>dk` / `<leader>dj` | 调用栈 上 / 下 |
-| `<leader>dw` | 变量悬浮预览 |
+| `<leader>dc` | 继续执行（Continue） |
+| `<leader>di` / `<leader>do` / `<leader>dO` | 单步进入 (Step Into) / 跳出 (Step Out) / 单步跳过 (Step Over) |
+| `<leader>du` | 切换调试 UI 面板（变量、调用栈、监视列表） |
+| `<leader>de` | 快速计算表达式值 |
+| `<leader>dt` | 终止调试会话 |
 
-调试时 nvim-dap-ui 会自动展示：变量、监视、断点列表、调用栈。
+---
 
 ## 目录结构
 
 ```
-lua/
-├── config/           # 全局配置与 lazy.nvim 引导
-│   ├── options.lua
-│   ├── autocmds.lua
-│   ├── keymaps.lua
-│   └── lazy.lua
-├── plugins/          # 每个文件一个插件/功能
-│   ├── catppuccin.lua   # 主题 + 全透明
-│   ├── snacks.lua       # Snacks(终端/上传 等)
-│   ├── luansnip.lua     # 代码片段
-│   ├── dap.lua          # 调试器
-│   └── navic.lua        # 面包屑
-ftplugin/
-└── cpp.lua           # C++ 缩进 + 编译/运行快捷键
-snippets/
-└── cpp.lua           # C++ 头部模板
+~/.config/nvim/
+├── lua/
+│   ├── config/              # 全局配置与 LazyVim 核心
+│   │   ├── options.lua      # 基础编辑器选项
+│   │   ├── autocmds.lua     # 自动命令
+│   │   ├── keymaps.lua      # 全局快捷键映射
+│   │   └── lazy.lua         # Lazy.nvim 插件管理与 Extras 引入
+│   └── plugins/             # 模块化插件配置
+│       ├── antigravity.lua  # Antigravity CLI 侧边栏与浮窗智能停靠
+│       ├── catppuccin.lua   # Catppuccin Mocha 主题定制、全透明与高亮增强
+│       ├── lean.lua         # Lean 4 语言服务器与 Infoview 深度适配
+│       ├── markdown.lua     # Markdown 渲染与浏览器 KaTeX 实时预览
+│       ├── dap.lua          # Codelldb 调试器与 UI
+│       ├── snacks.lua       # Snacks Explorer 文件树与终端增强
+│       └── luasnip.lua      # 代码片段引擎
+├── ftplugin/
+│   └── cpp.lua              # C++ 编译与执行命令
+└── snippets/
+    └── cpp.lua              # 算法竞赛模版
 ```
-
-> 注：`template.cpp` 是历史遗留的写满代码的文件，不属于配置，可自行清理。
