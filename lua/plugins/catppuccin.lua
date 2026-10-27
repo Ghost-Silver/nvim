@@ -54,6 +54,14 @@ return {
           SnacksPicker = { bg = "none" },
           SnacksPickerBorder = { bg = "none" },
           SnacksPickerTitle = { bg = "none" },
+          SnacksPickerList = { bg = "none" },
+          SnacksPickerListCursorLine = { bg = "none", bold = true },
+          SnacksPickerCursorLine = { bg = "none", bold = true },
+          SnacksPickerPreviewCursorLine = { bg = "none" },
+          SnacksPickerSelected = { bg = "none", bold = true },
+          -- 常见文件树选中项背景全透明（不加深）
+          NeoTreeCursorLine = { bg = "none", bold = true },
+          NvimTreeCursorLine = { bg = "none", bold = true },
           -- which-key
           WhichKey = { bg = "none" },
           WhichKeyFloat = { bg = "none" },

@@ -81,24 +81,29 @@ return {
 
           -- 动态构造窗口停靠配置
           local win_config = {}
+          local default_wo = {
+            winbar = " Antigravity CLI ",
+            wrap = false,
+            number = false,
+            relativenumber = false,
+            signcolumn = "no",
+            foldcolumn = "0",
+          }
+
           if info_win and vim.api.nvim_win_is_valid(info_win) then
             win_config = {
               win = info_win,
               relative = "win",
               position = "bottom",
               height = 0.5,
-              wo = {
-                winbar = " Antigravity CLI ",
-              },
+              wo = default_wo,
             }
           else
             win_config = {
               position = "right",
-              width = 0.40,
+              width = 0.45,
               border = "left",
-              wo = {
-                winbar = " Antigravity CLI ",
-              },
+              wo = default_wo,
             }
           end
 
@@ -132,8 +137,7 @@ return {
             term.opts.height = win_config.height
             term.opts.width = win_config.width
             term.opts.border = win_config.border
-            term.opts.wo = term.opts.wo or {}
-            term.opts.wo.winbar = win_config.wo.winbar
+            term.opts.wo = vim.tbl_extend("force", term.opts.wo or {}, win_config.wo)
             term:show()
             vim.schedule(balance_heights)
           end
@@ -153,6 +157,13 @@ return {
               height = 0.88,
               title = " Antigravity CLI ",
               title_pos = "center",
+              wo = {
+                wrap = false,
+                number = false,
+                relativenumber = false,
+                signcolumn = "no",
+                foldcolumn = "0",
+              },
             },
           })
         end,
@@ -212,6 +223,13 @@ return {
                 height = 0.45,
                 title = " Antigravity Review ",
                 title_pos = "center",
+                wo = {
+                  wrap = false,
+                  number = false,
+                  relativenumber = false,
+                  signcolumn = "no",
+                  foldcolumn = "0",
+                },
               },
             })
           end)
